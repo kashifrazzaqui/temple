@@ -49,5 +49,5 @@ This script helps you to quickly set up a new TypeScript project with the necess
     To run the server with auto reloading
 
     ```sh
-    npx run start
+    npm run start
     ```
