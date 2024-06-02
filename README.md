@@ -1,5 +1,5 @@
-# TypeScript Project Setup Script
 
+# TypeScript Project Setup Script
 This script helps you to quickly set up a new TypeScript project with the necessary boilerplate files, directory structure, and npm dependencies. It also initializes a git repository and creates a `.gitignore` file with relevant entries.
 
 ## Prerequisites
@@ -18,12 +18,12 @@ This script helps you to quickly set up a new TypeScript project with the necess
     If not already executable, make the script executable by running:
 
     ```sh
-    chmod +x create_ts_project.py
+    chmod +x temple.py
     ```
 
-3. **Create the Templates Directory**
+3. **Update the Templates Directory**
 
-    Ensure that you have a `templates` directory in the same directory as the script, containing the following files:
+    Update the following files to suit your taste, if required.
 
     - `index.html`
     - `index.ts`
@@ -31,38 +31,23 @@ This script helps you to quickly set up a new TypeScript project with the necess
     - `style.css`
     - `.gitignore`
 
-    You can create these files using the provided content below.
-
 4. **Run the Script**
 
     To create a new TypeScript project, run the script with the desired project name and target path:
 
     ```sh
-    ./create_ts_project.py <project_name> <target_path>
+    ./temple.py <project_name> <target_path>
     ```
 
     To specify a custom `tsconfig.json`, use the `--tsconfig` option:
+    This tsconfig will be soft-linked and not copied.
 
     ```sh
-    ./create_ts_project.py <project_name> <target_path> --tsconfig /path/to/custom/tsconfig.json
+    ./temple.py <project_name> <target_path> --tsconfig /path/to/custom/tsconfig.json
     ```
 
-## File Contents
+    To run the server with auto reloading
 
-### `index.html`
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{project_name}}</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <h1>Welcome to {{project_name}}</h1>
-    <script src="dist/index.js"></script>
-</body>
-</html>
-
+    ```sh
+    npx live-server --watch=src --watch=index.html --watch=style.css
+    ```
