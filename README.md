@@ -49,5 +49,5 @@ This script helps you to quickly set up a new TypeScript project with the necess
     To run the server with auto reloading
 
     ```sh
-    npx live-server --watch=src --watch=index.html --watch=style.css
+    npx run start
     ```

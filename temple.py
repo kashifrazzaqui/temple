@@ -30,11 +30,11 @@ def create_boilerplate_files(project_path, project_name, tsconfig_path=None):
         f.write(index_html_content)
     print("Created index.html")
 
-    # Create src/index.ts
-    index_ts_content = read_file('templates/index.ts').replace('{{project_name}}', project_name)
-    with open(os.path.join(src_path, 'index.ts'), 'w') as f:
-        f.write(index_ts_content)
-    print("Created src/index.ts")
+    # Create src/main.ts
+    main_ts_content = read_file('templates/main.ts').replace('{{project_name}}', project_name)
+    with open(os.path.join(src_path, 'main.ts'), 'w') as f:
+        f.write(main_ts_content)
+    print("Created src/main.ts")
 
     # Create style.css
     style_css_content = read_file('templates/style.css')
@@ -69,10 +69,7 @@ def initialize_npm(project_path):
 
 def install_dependencies(project_path):
     try:
-        subprocess.run(['npm', 'install', 'typescript'], cwd=project_path, check=True)
-        subprocess.run(['npm', 'install', 'ts-node', '--save-dev'], cwd=project_path, check=True)
-        subprocess.run(['npm', 'install', 'nodemon', '--save-dev'], cwd=project_path, check=True)
-        subprocess.run(['npm', 'install', 'live-server', '--save-dev'], cwd=project_path, check=True)
+        subprocess.run(['npm', 'install', 'typescript', 'live-server', 'concurrently', '--save-dev'], cwd=project_path, check=True)
         print("Installed npm dependencies")
     except subprocess.CalledProcessError as e:
         print(f"Error installing npm dependencies: {e}")
@@ -97,13 +94,14 @@ def update_package_json(project_path):
         package_json = json.load(f)
 
     package_json['scripts'] = {
-        "start": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
-        "serve": "live-server --watch=src --watch=index.html --watch=style.css"
+        "start": "concurrently \"npm run tsc\" \"npm run serve\"",
+        "tsc": "tsc --watch",
+        "serve": "live-server --watch=dist,src,index.html,style.css"
     }
 
     with open(package_json_path, 'w') as f:
         json.dump(package_json, f, indent=2)
-    print("Updated package.json with start and serve scripts")
+    print("Updated package.json with start, tsc, and serve scripts")
 
 def main():
     parser = argparse.ArgumentParser(description="Create a new TypeScript project.")
@@ -124,6 +122,6 @@ def main():
     initialize_git(project_path)
     update_package_json(project_path)
 
-if __name__ in "__main__":
+if __name__ == "__main__":
     main()
 
