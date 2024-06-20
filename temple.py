@@ -27,6 +27,10 @@ def create_boilerplate_files(project_path, project_name, tsconfig_path=None):
     src_path = os.path.join(project_path, 'src')
     os.makedirs(src_path, exist_ok=True)
 
+    # Create styles directory
+    styles_path = os.path.join(project_path, 'styles')
+    os.makedirs(styles_path, exist_ok=True)
+
     # Create index.html
     index_html_content = read_file('templates/index.html').replace('{{project_name}}', project_name)
     with open(os.path.join(project_path, 'index.html'), 'w') as f:
@@ -39,11 +43,11 @@ def create_boilerplate_files(project_path, project_name, tsconfig_path=None):
         f.write(main_ts_content)
     print("Created src/main.ts")
 
-    # Create src/style.css
+    # Create styles/style.css
     style_css_content = read_file('templates/style.css')
-    with open(os.path.join(src_path, 'style.css'), 'w') as f:
+    with open(os.path.join(styles_path, 'style.css'), 'w') as f:
         f.write(style_css_content)
-    print("Created src/style.css")
+    print("Created styles/style.css")
 
     # Handle tsconfig.json
     tsconfig_default_content = json.loads(read_file('templates/tsconfig.json'))
