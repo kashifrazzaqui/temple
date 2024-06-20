@@ -6,9 +6,11 @@ import argparse
 import json
 import subprocess
 
+
 def read_file(file_path):
     with open(file_path, 'r') as file:
         return file.read()
+
 
 def create_project_directory(target_path, project_name):
     project_path = os.path.join(target_path, project_name)
@@ -18,6 +20,7 @@ def create_project_directory(target_path, project_name):
     except FileExistsError:
         print(f"Directory {project_path} already exists")
     return project_path
+
 
 def create_boilerplate_files(project_path, project_name, tsconfig_path=None):
     # Create src directory
@@ -36,11 +39,11 @@ def create_boilerplate_files(project_path, project_name, tsconfig_path=None):
         f.write(main_ts_content)
     print("Created src/main.ts")
 
-    # Create style.css
+    # Create src/style.css
     style_css_content = read_file('templates/style.css')
-    with open(os.path.join(project_path, 'style.css'), 'w') as f:
+    with open(os.path.join(src_path, 'style.css'), 'w') as f:
         f.write(style_css_content)
-    print("Created style.css")
+    print("Created src/style.css")
 
     # Handle tsconfig.json
     tsconfig_default_content = json.loads(read_file('templates/tsconfig.json'))
@@ -59,6 +62,13 @@ def create_boilerplate_files(project_path, project_name, tsconfig_path=None):
             json.dump(tsconfig_default_content, f, indent=4)
         print("Created default tsconfig.json")
 
+    # Create webpack.config.js
+    webpack_config_content = read_file('templates/webpack.config.js').replace('{{project_name}}', project_name)
+    with open(os.path.join(project_path, 'webpack.config.js'), 'w') as f:
+        f.write(webpack_config_content)
+    print("Created webpack.config.js")
+
+
 def initialize_npm(project_path):
     try:
         subprocess.run(['npm', 'init', '-y'], cwd=project_path, check=True)
@@ -67,13 +77,17 @@ def initialize_npm(project_path):
         print(f"Error initializing npm: {e}")
         sys.exit(1)
 
+
 def install_dependencies(project_path):
     try:
-        subprocess.run(['npm', 'install', 'typescript', 'live-server', 'concurrently', '--save-dev'], cwd=project_path, check=True)
+        subprocess.run(
+            ['npm', 'install', 'typescript', 'webpack', 'webpack-cli', 'webpack-dev-server', 'html-webpack-plugin',
+             'css-loader', 'style-loader', 'ts-loader', '--save-dev'], cwd=project_path, check=True)
         print("Installed npm dependencies")
     except subprocess.CalledProcessError as e:
         print(f"Error installing npm dependencies: {e}")
         sys.exit(1)
+
 
 def initialize_git(project_path):
     try:
@@ -88,20 +102,21 @@ def initialize_git(project_path):
         print(f"Error initializing git: {e}")
         sys.exit(1)
 
+
 def update_package_json(project_path):
     package_json_path = os.path.join(project_path, 'package.json')
     with open(package_json_path, 'r') as f:
         package_json = json.load(f)
 
     package_json['scripts'] = {
-        "start": "concurrently \"npm run tsc\" \"npm run serve\"",
-        "tsc": "tsc --watch",
-        "serve": "live-server --watch=dist,src,index.html,style.css"
+        "start": "webpack serve --mode development",
+        "build": "webpack --mode production"
     }
 
     with open(package_json_path, 'w') as f:
         json.dump(package_json, f, indent=2)
-    print("Updated package.json with start, tsc, and serve scripts")
+    print("Updated package.json with start and build scripts")
+
 
 def main():
     parser = argparse.ArgumentParser(description="Create a new TypeScript project.")
@@ -122,6 +137,6 @@ def main():
     initialize_git(project_path)
     update_package_json(project_path)
 
+
 if __name__ == "__main__":
     main()
-
